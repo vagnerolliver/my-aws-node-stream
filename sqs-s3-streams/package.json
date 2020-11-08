@@ -1,5 +1,5 @@
 {
-  "name": "tooling-s3-sqs",
+  "name": "s3-sqs-stream",
   "version": "1.0.0",
   "main": "handler.js",
   "scripts": {

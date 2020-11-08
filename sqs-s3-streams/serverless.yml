@@ -1,21 +1,21 @@
-service: tooling-s3-sqs
+service: s3-sqs-streams
 frameworkVersion: '2'
 
 provider:
   name: aws
   runtime: nodejs12.x
-  state: ${opt:stage, "dev"}
+  stage: ${opt:stage, "dev"}
   environment:
-    BUCKET_NAME: arquivos-009-vagner 
-    SQS_QUEUE: file-handler
-  iamRoleStatements: 
+    BUCKET_NAME: arquivos-010-vagner
+    SQS_QUEUE: file-handler2
+  iamRoleStatements:
     - Effect: Allow
       Action:
         - sqs:SendMessage
         - sqs:GetQueueUrl
         - sqs:CreateQueue
         - sqs:ReceiveMessage
-      Resource: ${self.custom.sqsArn}
+      Resource: ${self:custom.sqsArn}
     - Effect: Allow
       Action:
         - s3:*
@@ -36,14 +36,14 @@ custom:
   localstack:
     stages:
       - local
-    # desabilitar o localstack quando fizer deploy  
+    # desabilitar o localstack quando fizer deploy
     autostart: false
-    
-  serverless-offline:
-    userChildProcesses: true
 
-packages: 
-  individually: true
+  serverless-offline:
+    useChildProcesses: true
+
+package:
+  individually: true 
   excludeDevDependencies: true
 
 functions:
@@ -63,13 +63,11 @@ functions:
           batchSize: 1
           arn: ${self:custom.sqsArn}
 
-resources: 
-  Resources:
+resources:
+  Resources: 
     SQSQueue:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ${self:provider.environment.SQS_QUEUE}
         VisibilityTimeout: 60
-
-        
  
