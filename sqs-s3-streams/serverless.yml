@@ -1,0 +1,54 @@
+service: tooling-s3-sqs
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  state: ${opt:stage, "dev"}
+  environment:
+    BUCKET_NAME: arquivos-009-vagner 
+    SQS_QUEUE: file-handler
+
+plugins:
+  - serverless-localstack
+  - serverless-mocha-plugin
+  - serverless-offline
+
+custom:
+  sqsArn:
+    Fn::GetAtt:
+      - SQSQueue
+      - Arn
+
+  localstack:
+    stages:
+      - local
+    # desabilitar o localstack quando fizer deploy  
+    autostart: false
+  serverless-offline:
+    userChildProcesses: true
+
+packages: 
+  individually: true
+  excludeDevDependencies: true
+
+functions:
+  s3listener:
+    handler: src/.s3listener
+    events:
+      - s3:
+          bucket: ${self:provider.environment.BUCKET_NAME}
+          event: s3:ObjectCreated:*
+          rules:
+            suffix: .csv
+
+resources: 
+  Resources:
+    SQSQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:provider.environment.SQS_QUEUE}
+        VisibilityTimeout: 60
+
+        
+ 
