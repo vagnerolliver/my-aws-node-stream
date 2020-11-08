@@ -8,9 +8,22 @@ provider:
   environment:
     BUCKET_NAME: arquivos-009-vagner 
     SQS_QUEUE: file-handler
+  iamRoleStatements: 
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+        - sqs:GetQueueUrl
+        - sqs:CreateQueue
+        - sqs:ReceiveMessage
+      Resource: ${self.custom.sqsArn}
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: 
+        - arn:aws:s3:::${self:provider.environment.BUCKET_NAME}/*
+        - arn:aws:s3:::${self:provider.environment.BUCKET_NAME}
 
-plugins:
-  - serverless-localstack
+plugins: 
   - serverless-mocha-plugin
   - serverless-offline
 
@@ -25,6 +38,7 @@ custom:
       - local
     # desabilitar o localstack quando fizer deploy  
     autostart: false
+    
   serverless-offline:
     userChildProcesses: true
 
@@ -34,13 +48,20 @@ packages:
 
 functions:
   s3listener:
-    handler: src/.s3listener
+    handler: src/index.s3listener
     events:
       - s3:
           bucket: ${self:provider.environment.BUCKET_NAME}
           event: s3:ObjectCreated:*
           rules:
-            suffix: .csv
+            - suffix: .csv
+
+  sqslistener:
+    handler: src/index.sqslistener
+    events:
+      - sqs:
+          batchSize: 1
+          arn: ${self:custom.sqsArn}
 
 resources: 
   Resources:
