@@ -27,7 +27,7 @@
             "arn": "arn:aws:s3:::arquivos-010-vagner"
           },
           "object": {
-            "key": "test03.csv",
+            "key": "test.csv",
             "size": 9,
             "eTag": "2f1a777c76f6ea805b39ef27a72cf062",
             "sequencer": "005FAA1A61DB60A7A9"
