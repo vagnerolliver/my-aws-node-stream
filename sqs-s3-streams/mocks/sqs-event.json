@@ -3,7 +3,7 @@
       {
         "messageId": "2c4bcc0b-033d-41c3-b2e8-ac1209c35230",
         "receiptHandle": "AQEBChha9Q7t5YHxSS5bK9fVx1FmAdexjSH9oMY5ua2/djHRzjDoq/acm4l+cOmbrOeIUBHOxUdv+g4k9QKzV4Kshc5dRIutsoCSOCJh5m6qwLOB9/okVdmGXjBAj9JeJc6bfot10TbAULFyfjMu9KXEf2IQ0ZKHHM3Y+75hMbGyKwlOpT0ooQlQIfWYTwW+1RVUbXY/fbkFNSJrf+8ZtIeLx3jXLzWnv/UR6eSz8bU67gc8pQ4dbSfcg5q7d0zkI/FCkw/eEHpQmFG7fCvHN6DMUi//4PxXKmGizbm8uDicEtSSiZsFYDg6hRciuTOSePRbLlQ5KGHfvnUwT0P5/QhrxTk3dH9qKueBA6xDcPQLUoWQfJFLXx2y6VIDmuqdjh/vNnOiZsJmUX0QwXuRHjymOA==",
-        "body": "Hey ho lets go",
+        "body": "{\"name\": \"Hey ho lets go\"}",
         "attributes": {
           "ApproximateReceiveCount": "1",
           "SentTimestamp": "1604985674082",

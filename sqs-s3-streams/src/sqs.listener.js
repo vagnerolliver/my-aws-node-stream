@@ -1,8 +1,15 @@
 class Handler {
     async main(event){
+        const [{ body, messageId }] = event.Records
+        const item = JSON.parse(body)
+        
         console.log("*****event", 
             JSON.stringify( 
-                event,
+                {
+                    ...item,
+                    messageId,
+                    at: new Date().toISOString()
+                },
                 null,
                 2
             )
