@@ -1,4 +1,7 @@
 const AWS = require('aws-sdk')
+const { Writable, pipeline } = require('stream')
+const csvtojson = require('csvtojson')
+const { resolve } = require('path')
 class Handler {
     constructor({ s3Svc, sqsSvc }) {
         this.s3Svc = s3Svc
@@ -41,10 +44,33 @@ class Handler {
         return QueueUrl
     }
 
+    processDataOnDemand(queueUrl) {
+        const writableStream = new Writable({
+            write: (chunk, encoding, done) => {
+                const item = chunk.toString()
+                console.log('sending..', item, 'at', new Date().toISOString())
+                this.sqsSvc.sendMessage({
+                    QueueUrl: queueUrl,
+                    MessageBody: item
+                }, done) 
+            }
+        })
+        return writableStream
+    } 
+
+    async pipefyStreams(...args) {
+        return new Promise((resolve, reject) => {
+            pipeline(
+                ...args,
+                error => error ? reject(error) : resolve()
+            )
+        })
+    }
+
     async main(event){
         const [
             {
-                s3: {
+                s3: { 
                     bucket: { name },
                     object: { key }
                 }
@@ -54,11 +80,29 @@ class Handler {
         console.log('processing: ', name, key)
   
         try {
+            console.log('getting queueUrl...')
             const queueUrl = await this.getQueueUrl()
-            console.log('queueUrl', queueUrl)
+            const params = {
+                Bucket: name, Key: key
+            }
+ 
+            // this.s3Svc.getObject(params)
+            //     .createReadStream() 
+            //     .pipe(csvtojson())
+            //     .pipe(this.processDataOnDemand(queueUrl))
+
+            this.pipefyStreams(
+                this.s3Svc
+                    .getObject(params)
+                    .createReadStream(), 
+                csvtojson(),
+                this.processDataOnDemand(queueUrl)
+            )
+            console.log('process finished...', new Date().toISOString())
+
             return {
                 statusCode: 200,
-                body: 'Hello'
+                body: 'Process finished'
             }
         } catch (error) {
             console.log('****error', error.stack)
